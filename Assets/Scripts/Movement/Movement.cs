@@ -15,7 +15,7 @@ public class Movement : MonoBehaviour
     [SerializeField] private float jumpForce;
     [SerializeField] private float YVelocity;
     private float currentSpeed;
-    float PlrHeight = 3;
+    float PlrHeight = 2;
 
     // Look/View parameters
     [SerializeField] private float mouseSens = 1f;
@@ -107,18 +107,18 @@ public class Movement : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.LeftControl))
         {
             isCrouch = true;
-            PlrHeight = 1.5f;
+            PlrHeight = 1.3f;
             currentSpeed = CrouchSpeed;
         }
         if (Input.GetKeyUp(KeyCode.LeftControl) || Input.GetKeyDown(KeyCode.Space))
         {
             if (Physics.SphereCast(transform.position - Vector3.up * 2f, 1.5f, Vector3.up, out _, 5)) return;
             isCrouch = false;
-            PlrHeight = 3;
+            PlrHeight = 2;
             currentSpeed = WalkSpeed;
         }
 
-        transform.localScale = new Vector3(3, PlrHeight, 3);
+        transform.localScale = new Vector3(1, PlrHeight, 1);
     }
     void PlayerMovement()
     {
@@ -199,7 +199,7 @@ public class Movement : MonoBehaviour
         }
 
         Z = Mathf.Lerp(Z, mouseY * ZModifier - (H * 2), 0.5f);
-        Vector3 pos = Vector3.Lerp(cam.transform.position, transform.position + transform.right * SinX + Vector3.up * transform.localScale.y * SinY  + cam.transform.forward * 1.2f + Vector3.up * transform.localScale.y/2, Time.deltaTime * 25);
+        Vector3 pos = Vector3.Lerp(cam.transform.position, transform.position + transform.right * SinX + Vector3.up * transform.localScale.y * SinY  + cam.transform.forward * 0.5f + Vector3.up * transform.localScale.y/2, Time.deltaTime * 25);
         cam.transform.position = Vector3.Lerp(cam.transform.position, pos , 0.7f);
         
         cam.transform.rotation = Quaternion.Lerp(cam.transform.rotation, Quaternion.Euler(X, Y, Z), Time.deltaTime * 30);
