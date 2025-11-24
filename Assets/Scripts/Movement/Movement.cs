@@ -148,7 +148,7 @@ public class Movement : MonoBehaviour
         moveDir = Vector3.ClampMagnitude(moveDir, spd);
 
         RaycastHit hit_;
-        if (YVelocity > -1 && Physics.SphereCast(gameObject.transform.position, 1, gameObject.transform.up * 1, out hit_, 2.1f))
+        if (YVelocity > -1 && Physics.SphereCast(gameObject.transform.position, 1, gameObject.transform.up, out hit_, transform.localScale.y/1.7f))
         {
             if (hit_.collider.gameObject)
             {
