@@ -162,16 +162,17 @@ public class Movement : MonoBehaviour
             YVelocity = Mathf.Max(YVelocity, -50);
         }
         cc.Move((moveDir + Vector3.up * YVelocity) * Time.deltaTime);
-        walkDist -= Magnitude * Time.deltaTime / 6.2f;
+        wd -= Magnitude * Time.deltaTime / 6.2f;
     }
 
-    public float walkDist = 1;
+    [SerializeField] private float walkDist = 0.5f;
+    private float wd;
     void FootstepSnd()
     {
         if (isFalling || isCrouch) return;
-        if (walkDist <= 0)
+        if (wd <= 0)
         {
-            walkDist = 1;
+            wd = walkDist;
             snd_.playsoundatpoint_(0, transform.position - Vector3.down * 1f, 0.1f);
         }
     }
