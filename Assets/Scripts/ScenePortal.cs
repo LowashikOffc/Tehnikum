@@ -11,17 +11,42 @@ public class ScenePortal : MonoBehaviour
 
     void Start()
     {
-        // Скрываем подсказку в начале
-        if (pressEText != null)
-            pressEText.SetActive(false);
+        // Обычный код старта...
+        rb = GetComponent<Rigidbody>();
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
+        // --- НОВЫЙ КОД: ПРОВЕРКА ВОЗВРАЩЕНИЯ ---
+        if (GlobalData.isReturning)
+        {
+            // Если мы вернулись из мини-игры, телепортируемся на старое место
+            transform.position = GlobalData.playerPosition;
+
+            // (Важно для физики) Сбрасываем инерцию, чтобы не вылететь
+            if (rb != null) rb.velocity = Vector3.zero;
+
+            // Сбрасываем флаг, чтобы при перезапуске игры мы появлялись на старте
+            GlobalData.isReturning = false;
+        }
+        // ----------------------------------------
     }
 
     void Update()
     {
-        // Если игрок в зоне И нажал E
         if (isPlayerInZone && Input.GetKeyDown(KeyCode.E))
         {
-            // Загружаем сцену
+            // 1. Находим игрока (чтобы узнать его координаты)
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+
+            if (player != null)
+            {
+                // 2. Сохраняем его позицию в нашу "Память"
+                // (минус немного назад, чтобы не появиться внутри портала и не телепортироваться снова)
+                GlobalData.playerPosition = player.transform.position - player.transform.forward * 2f;
+                GlobalData.isReturning = true;
+            }
+
+            // 3. Загружаем мини-игру
             SceneManager.LoadScene(sceneName);
         }
     }
