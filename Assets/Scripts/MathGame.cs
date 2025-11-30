@@ -1,141 +1,126 @@
 using UnityEngine;
-using TMPro; // Библиотека для красивого текста
-using UnityEngine.UI; // Библиотека для интерфейса
-using System.Collections;
-using System.Collections.Generic;
+using UnityEngine.UI;
+using TMPro;
 
 public class MathGame : MonoBehaviour
 {
-    [Header("UI Элементы")]
-    [SerializeField] private TextMeshProUGUI questionText;
-    [SerializeField] private TextMeshProUGUI scoreText;
-    [SerializeField] private Button[] answerButtons;
+    [Header("UI Компоненты")]
+    public TMP_Text questionText;
+    public TMP_Text scoreText;
+    public TMP_Text feedbackText;
+    public TMP_InputField inputField;
 
-    [Header("Настройки")]
-    [SerializeField] private Color normalColor = new Color(1f, 1f, 1f, 0.1f); // Прозрачный белый
-    [SerializeField] private Color correctColor = new Color(0f, 1f, 0.2f, 1f); // Неоновый зеленый
-    [SerializeField] private Color wrongColor = new Color(1f, 0f, 0.3f, 1f);   // Неоновый красный
+    [Header("Настройки сложности")]
+    public int maxNumber = 10;
 
     private int correctAnswer;
-    private int currentScore = 0;
-    private bool canClick = true;
+    private int score = 0;
 
     void Start()
     {
-        currentScore = 0;
+        // --- ЭТИ ДВЕ СТРОЧКИ ВКЛЮЧАЮТ КУРСОР ---
+        Cursor.lockState = CursorLockMode.None; // Разблокировать курсор (чтобы двигался)
+        Cursor.visible = true; // Сделать видимым
+        // ---------------------------------------
+
+        score = 0;
+        feedbackText.text = "";
         UpdateScore();
         GenerateQuestion();
+    }
+
+    void Update()
+    {
+        // Добавляем поддержку нажатия Enter (основной и на NumPad)
+        if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
+        {
+            CheckAnswer();
+        }
     }
 
     void GenerateQuestion()
     {
-        canClick = true;
+        // Исправление: maxNumber + 1, чтобы само число maxNumber тоже могло выпасть
+        int a = Random.Range(1, maxNumber + 1);
+        int b = Random.Range(1, maxNumber + 1);
 
-        // Сброс цветов кнопок
-        foreach (var btn in answerButtons)
-        {
-            btn.image.color = normalColor;
-            btn.interactable = true;
-        }
+        int operation = Random.Range(0, 2);
 
-        // 1. Генерация чисел
-        int a = Random.Range(1, 20);
-        int b = Random.Range(1, 20);
-
-        // 2. Случайная операция (0: +, 1: -)
-        int op = Random.Range(0, 2);
-        string operationSymbol = "";
-
-        if (op == 0)
+        if (operation == 0) // Сложение
         {
             correctAnswer = a + b;
-            operationSymbol = "+";
+            questionText.text = $"{a} + {b} = ?";
         }
-        else
+        else // Вычитание
         {
-            // Чтобы не было отрицательных чисел для простоты
             if (a < b) { int temp = a; a = b; b = temp; }
+
             correctAnswer = a - b;
-            operationSymbol = "-";
+            questionText.text = $"{a} - {b} = ?";
         }
 
-        // 3. Красивый вывод вопроса
-        questionText.text = $"{a} {operationSymbol} {b} = ?";
-
-        // 4. Генерация вариантов ответов
-        List<int> answers = new List<int>();
-        answers.Add(correctAnswer);
-
-        while (answers.Count < answerButtons.Length)
-        {
-            int wrong = correctAnswer + Random.Range(-5, 6);
-            if (wrong != correctAnswer && !answers.Contains(wrong) && wrong >= 0)
-            {
-                answers.Add(wrong);
-            }
-        }
-
-        // Перемешиваем ответы (алгоритм Фишера-Йетса)
-        for (int i = 0; i < answers.Count; i++)
-        {
-            int temp = answers[i];
-            int randomIndex = Random.Range(i, answers.Count);
-            answers[i] = answers[randomIndex];
-            answers[randomIndex] = temp;
-        }
-
-        // 5. Назначение текста кнопкам
-        for (int i = 0; i < answerButtons.Length; i++)
-        {
-            // Получаем текст внутри кнопки
-            answerButtons[i].GetComponentInChildren<TextMeshProUGUI>().text = answers[i].ToString();
-
-            int capturedValue = answers[i]; // Захват переменной для лямбды
-            answerButtons[i].onClick.RemoveAllListeners();
-            answerButtons[i].onClick.AddListener(() => OnAnswerSelected(capturedValue, i));
-        }
+        // Очищаем поле и ВЕРТАЕМ ФОКУС, чтобы можно было сразу печатать
+        inputField.text = "";
+        inputField.ActivateInputField();
+        inputField.Select();
     }
 
-    void OnAnswerSelected(int selectedValue, int buttonIndex)
+    public void CheckAnswer()
     {
-        if (!canClick) return;
-        canClick = false;
+        // Если пусто, ничего не делаем
+        if (string.IsNullOrEmpty(inputField.text)) return;
 
-        if (selectedValue == correctAnswer)
+        int playerAnswer;
+
+        if (!int.TryParse(inputField.text, out playerAnswer))
         {
-            // Правильно!
-            answerButtons[buttonIndex].image.color = correctColor;
-            currentScore++;
-            StartCoroutine(WaitAndRestart(1f)); // Ждем 1 секунду
+            feedbackText.color = Color.yellow; // Желтый для предупреждения
+            feedbackText.text = "Это не число!";
+            inputField.text = "";
+            inputField.ActivateInputField(); // Возвращаем фокус
+            return;
+        }
+
+        if (playerAnswer == correctAnswer)
+        {
+            score++;
+            // Исправление: используем только .color, без html тегов
+            feedbackText.color = Color.green;
+            feedbackText.text = "Верно!";
+
+            UpdateScore();
+            GenerateQuestion();
         }
         else
         {
-            // Ошибка!
-            answerButtons[buttonIndex].image.color = wrongColor;
+            feedbackText.color = Color.red;
+            feedbackText.text = "Ошибка! Попробуй еще.";
 
-            // Подсветим правильную кнопку, чтобы игрок знал ответ
-            foreach (var btn in answerButtons)
-            {
-                if (btn.GetComponentInChildren<TextMeshProUGUI>().text == correctAnswer.ToString())
-                {
-                    btn.image.color = correctColor;
-                }
-            }
-
-            currentScore = 0; // Обнуляем счет при ошибке (хардкор!)
-            StartCoroutine(WaitAndRestart(1.5f));
+            inputField.text = "";
+            inputField.ActivateInputField(); // Возвращаем фокус, чтобы игрок исправил
+            inputField.Select();
         }
-        UpdateScore();
-    }
-
-    IEnumerator WaitAndRestart(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        GenerateQuestion();
     }
 
     void UpdateScore()
     {
-        scoreText.text = $"SCORE: {currentScore}";
+        scoreText.text = "Счет: " + score;
+    }
+
+    public void QuitGame()
+    {
+        Debug.Log("Выход из игры...");
+        Application.Quit();
+
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#endif
+    }
+    // Добавь это в конец скрипта MathGame, перед последней закрывающей скобкой }
+
+    public void BackToMainWorld()
+    {
+        // ВНИМАНИЕ: Напиши здесь точное имя твоей 3D сцены (Level1, MainScene и т.д.)
+        UnityEngine.SceneManagement.SceneManager.LoadScene("SampleScene");
     }
 }
