@@ -28,6 +28,7 @@ Material:
   - _ENVIRONMENTREFLECTIONS_OFF
   - _NORMALMAP
   - _SPECULARHIGHLIGHTS_OFF
+  - _SPECULAR_SETUP
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -55,7 +56,8 @@ Material:
     m_Ints: []
     m_Floats:
     - _Smoothness: 0
+    - _WorkflowMode: 0
     m_Colors:
-    - _BaseColor: {r: 1, g: 0.97370535, b: 0.91132075, a: 1}
-    - _Color: {r: 1, g: 0.97370535, b: 0.91132075, a: 1}
+    - _BaseColor: {r: 0.8207547, g: 0.80202216, b: 0.7239676, a: 1}
+    - _Color: {r: 0.8207547, g: 0.80202216, b: 0.7239676, a: 1}
   m_BuildTextureStacks: []
