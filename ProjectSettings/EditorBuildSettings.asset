@@ -11,4 +11,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/MathLevel.unity
     guid: 41c690b58a8c6d54883eeaee29120727
+  - enabled: 1
+    path: Assets/Scenes/russianLavel.unity
+    guid: 860fee38066d4444889fc2db60a04a1a
+  - enabled: 1
+    path: Assets/Scenes/eanglieshLevel.unity
+    guid: 2f0ece3353c66bc4783bf5599266f39e
   m_configObjects: {}

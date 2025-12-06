@@ -2,6 +2,7 @@ using UnityEngine;
 
 public static class GlobalData
 {
-    public static Vector3 playerPosition; // Тут будем хранить координаты
-    public static bool isReturning = false; // Флаг: мы вернулись из мини-игры или только запустили игру?
+    public static bool isReturning = false; // Возвращаемся ли мы из мини-игры?
+    public static Vector3 playerPosition;   // Куда возвращать игрока
+    public static Quaternion playerRotation; // (Опционально) Куда смотрел игрок
 }
