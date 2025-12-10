@@ -103,7 +103,7 @@ public class MeshCreate : MonoBehaviour
 
     private void Update()
     {
-        if (vec.Count != 8) return;
+        //if (vec.Count != 8) return;
         if (debugLines == false) return;
         Drawlines(vec);
     }
