@@ -8,6 +8,7 @@ TagManager:
   - CanDrag
   - Door
   - Gate
+  - Danger
   layers:
   - Default
   - TransparentFX

@@ -14,4 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/russianLavel.unity
     guid: 860fee38066d4444889fc2db60a04a1a
+  - enabled: 1
+    path: Assets/Scenes/abpbrf.unity
+    guid: cbeb1909f09e82149a881be5305cdc90
   m_configObjects: {}
